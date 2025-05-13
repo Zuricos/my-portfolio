@@ -1,6 +1,9 @@
+using Zuricos.Folio.Api.Setup;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+builder.SetupConfig();
+builder.SetupServices();
 
 var app = builder.Build();
 
