@@ -1,0 +1,46 @@
+{
+  "folders": [
+    {
+      "path": "backend",
+      "name": "backend"
+    },
+    {
+      "path": "frontend",
+      "name": "frontend"
+    },
+    {
+      "path": "ci-cd",
+      "name": "ci-cd"
+    },
+    {
+      "path": "documentation",
+      "name": "documentation"
+    },
+    {
+      "path": ".",
+      "name": "root"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "backend": true,
+      "frontend": true,
+      "ci-cd": true,
+      "documentation": true,
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/bin": true,
+      "**/obj": true
+    },
+    "editor.tabSize": 2,
+    "[csharp]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp",
+        "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll"]
+    },
+    "terminal.integrated.gpuAcceleration": "off"
+  }
+}
