@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Zuricos.Folio.Data\Zuricos.Folio.Data.csproj" />
+    <ProjectReference Include="..\Zuricos.Folio.Migrations.Psql\Zuricos.Folio.Migrations.Psql.csproj" />
+    <ProjectReference Include="..\Zuricos.Folio.Migrations.Sqlite\Zuricos.Folio.Migrations.Sqlite.csproj" />
   </ItemGroup>
+  
 </Project>
