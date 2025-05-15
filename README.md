@@ -8,6 +8,12 @@ Licensed under:
 title for the project is not set.
 
 ## Dependencies
-Kudos goes to the following open-source nuget packages
-- [Finance.NET](https://github.com/thorstenalpers/Finance.NET)
-- [CoinGeck.NET](https://github.com/JKorf/CoinGecko.Net)
+Kudos goes to the following packages
+
+### [Finance.NET](https://github.com/thorstenalpers/Finance.NET)
+Copyright (c) 2024 by Thorsten
+Licensed under the MIT License. See the [LICENSE](https://github.com/thorstenalpers/Finance.NET/blob/main/LICENSE) file in the repository for details.
+
+### [CoinGeck.NET](https://github.com/JKorf/CoinGecko.Net)
+Copyright (c) 2018 JKorf
+Licensed under the MIT License. See the [LICENSE](https://github.com/JKorf/CoinGecko.Net/blob/main/LICENSE) file in the repository for details.
