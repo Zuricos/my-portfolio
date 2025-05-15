@@ -2,7 +2,7 @@ namespace Zuricos.Folio.Data.Enums;
 
 public enum AccountType
 {
-    Cash,
-    Securities,
-    Crypocurrency,    
+    Cash = 0,
+    Securities = 1,
+    Crypocurrency = 2,    
 }

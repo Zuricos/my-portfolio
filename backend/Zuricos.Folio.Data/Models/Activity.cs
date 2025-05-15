@@ -10,7 +10,7 @@ public class Activity
   // Foreign keys
   public required Guid UserId { get; set; }
   public required Guid AccountId { get; set; }
-  public required string AssetId { get; set; }
+  public required Guid AssetId { get; set; }
 
   // Activity details
   public required ActivityType Type { get; set; }
@@ -29,4 +29,8 @@ public class Activity
   // Timestamps
   public required DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
   public required DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+  // Navigation properties
+  public Account? Account { get; set; }
+  public Asset? Asset { get; set; }
 }

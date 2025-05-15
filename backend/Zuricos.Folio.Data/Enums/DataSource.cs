@@ -2,6 +2,6 @@ namespace Zuricos.Folio.Data.Enums;
 
 public enum DataSource
 {
-  YahooFinance,
-  CoinGecko
+  Yahoo = 0,
+  CoinGecko = 1
 }

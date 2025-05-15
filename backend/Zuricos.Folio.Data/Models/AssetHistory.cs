@@ -11,4 +11,7 @@ public class AssetHistory
   public required decimal Low { get; set; }
   public required decimal Close { get; set; }
   public required decimal Volume { get; set; }
+
+  // Navigation properties
+  public Asset? Asset { get; set; }
 }

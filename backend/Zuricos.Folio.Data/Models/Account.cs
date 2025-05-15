@@ -8,7 +8,9 @@ public class Account
   public required string Name { get; set; }
   public required AccountType Type { get; set; }
   public required string Currency { get; set; }
-  public required decimal Balance { get; set; }
   public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public required DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+  // Navigation properties
+  public List<Activity> Activities { get; set; } = new();
 }

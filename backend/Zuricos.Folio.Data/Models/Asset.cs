@@ -12,4 +12,7 @@ public class Asset
   public required DataSource DataSource { get; set; }
   public required DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
   public required DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+  // Navigation properties
+  public List<AssetHistory> History { get; set; } = [];
 }

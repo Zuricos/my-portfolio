@@ -2,7 +2,7 @@ namespace Zuricos.Folio.Data.Enums;
 
 public enum Theme
 {
-    Light,
-    Dark,
-    System
+    System = 0,
+    Light = 1,
+    Dark = 2,
 }
