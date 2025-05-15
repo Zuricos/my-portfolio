@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zuricos.Folio.Api", "Zurico
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zuricos.Folio.Data", "Zuricos.Folio.Data\Zuricos.Folio.Data.csproj", "{4719DD10-9AAA-4F96-B0A9-E4A1246B100E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zuricos.Folio.Migrations.Psql", "Zuricos.Folio.Migrations.Psql\Zuricos.Folio.Migrations.Psql.csproj", "{53257CC0-485A-4DA7-9FCC-48AED6C37623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zuricos.Folio.Migrations.Sqlite", "Zuricos.Folio.Migrations.Sqlite\Zuricos.Folio.Migrations.Sqlite.csproj", "{AC62E179-5907-439D-AFC8-D8766E34B962}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{4719DD10-9AAA-4F96-B0A9-E4A1246B100E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4719DD10-9AAA-4F96-B0A9-E4A1246B100E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4719DD10-9AAA-4F96-B0A9-E4A1246B100E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53257CC0-485A-4DA7-9FCC-48AED6C37623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53257CC0-485A-4DA7-9FCC-48AED6C37623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53257CC0-485A-4DA7-9FCC-48AED6C37623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53257CC0-485A-4DA7-9FCC-48AED6C37623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC62E179-5907-439D-AFC8-D8766E34B962}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC62E179-5907-439D-AFC8-D8766E34B962}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC62E179-5907-439D-AFC8-D8766E34B962}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC62E179-5907-439D-AFC8-D8766E34B962}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
