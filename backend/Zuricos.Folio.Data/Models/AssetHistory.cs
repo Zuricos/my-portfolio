@@ -10,6 +10,7 @@ public class AssetHistory
   public required decimal High { get; set; }
   public required decimal Low { get; set; }
   public required decimal Close { get; set; }
+  public required decimal AdjustedClose { get; set; }
   public required decimal Volume { get; set; }
 
   // Navigation properties
