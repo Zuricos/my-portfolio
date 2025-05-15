@@ -26,9 +26,6 @@ public static class HostApplicationBuilderServiceExtension
         "psql" => options.UseNpgsql(
           builder.Configuration.GetConnectionString("psql"),
           x => x.MigrationsAssembly("Zuricos.Folio.Migrations.Psql")),
-        "sqlite" => options.UseSqlite(
-          builder.Configuration.GetConnectionString("sqlite"),
-          x => x.MigrationsAssembly("Zuricos.Folio.Migrations.Sqlite")),
         _ => throw new NotSupportedException($"Database provider '{provider}' is not supported.")
       };
     });
