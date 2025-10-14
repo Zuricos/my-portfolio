@@ -8,7 +8,7 @@ public class User
   public required string Language { get; set; } = "en-US";
   public Theme Theme { get; set; } = Theme.System;
   public required string BaseCurrency { get; set; } = "USD";
-  
+
   // Navigation properties
   public List<Account> Accounts { get; set; } = [];
   public List<Activity> Activities { get; set; } = [];
