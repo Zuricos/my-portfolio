@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="CoinGecko.Net" Version="4.0.0" />
+    <PackageReference Include="Finance.NET" Version="1.0.7" />
   </ItemGroup>
 
   <ItemGroup>
