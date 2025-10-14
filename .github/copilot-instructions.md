@@ -5,13 +5,15 @@
 - Backend built with ASP.NET Core 9 Web API (`backend/Zuricos.Folio.Api`).
 - Domain layer `Zuricos.Folio.Data` exposes EF Core models and the `FolioDbContext`.
 - PostgreSQL is the primary data store, with EF Core migrations in `Zuricos.Folio.Migrations.Psql`.
-- Frontend folder is currently a placeholder; no UI framework has been committed yet.
+- Frontend will be implemented with React, Tailwind CSS 4, and DaisyUI; the `frontend/` folder is a placeholder until scaffolding begins.
+- MVP scope: unauthenticated users can create portfolio containers (e.g., brokers, banks) with currency-specific sub-accounts and record manual transactions (deposit, withdrawal, buy, sell, dividend, fee, tax). OIDC via Keycloak will follow later.
 
 ## Key Architectural Notes
 - `Program.cs` composes the app via `SetupConfig` and `SetupServices` extension methods. Keep new bootstrapping logic inside these extensions instead of expanding `Program.cs`.
 - DI container is configured through `builder.Services` in `SetupServices.cs`; register new services there.
 - Database access is done via `IDbContextFactory<FolioDbContext>`; prefer injection of `FolioDbContext` or its factory instead of creating manual connections.
 - Ensure migrations target the `Zuricos.Folio.Migrations.Psql` assembly and use Npgsql-compatible SQL.
+- Treat the API as single-tenant without authentication until the dedicated Keycloak/OIDC workstream starts.
 
 ## Domain Model Highlights
 - `Account`, `Asset`, `Activity`, `AssetHistory`, and `User` live in `backend/Zuricos.Folio.Data/Models` with fluent configuration in `FolioDbContext`.
