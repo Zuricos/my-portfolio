@@ -38,8 +38,11 @@
     },
     "editor.tabSize": 2,
     "[csharp]": {
-        "editor.defaultFormatter": "ms-dotnettools.csharp",
-        "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll"]
+      "editor.defaultFormatter": "csharpier.csharpier-vscode",
+      "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll"]
+    },
+    "[xml]": {
+      "editor.defaultFormatter": "csharpier.csharpier-vscode"
     },
     "terminal.integrated.gpuAcceleration": "off"
   }

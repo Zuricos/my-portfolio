@@ -1,9 +1,8 @@
-
 using Microsoft.EntityFrameworkCore;
-
 using Zuricos.Folio.Data;
 
 namespace Zuricos.Folio.Api.Setup;
+
 public static class HostApplicationBuilderServiceExtension
 {
   /// <summary>
@@ -25,20 +24,19 @@ public static class HostApplicationBuilderServiceExtension
       {
         "psql" => options.UseNpgsql(
           builder.Configuration.GetConnectionString("psql"),
-          x => x.MigrationsAssembly("Zuricos.Folio.Migrations.Psql")),
-        _ => throw new NotSupportedException($"Database provider '{provider}' is not supported.")
+          x => x.MigrationsAssembly("Zuricos.Folio.Migrations.Psql")
+        ),
+        _ => throw new NotSupportedException($"Database provider '{provider}' is not supported."),
       };
     });
-
 
     string allowHost = builder.Configuration.GetValue("AllowedHosts", "*");
     builder.Services.AddCors(options =>
     {
-      options.AddPolicy("AllowHost", builder =>
-            builder
-              .WithOrigins(allowHost)
-              .AllowAnyMethod()
-              .AllowAnyHeader());
+      options.AddPolicy(
+        "AllowHost",
+        builder => builder.WithOrigins(allowHost).AllowAnyMethod().AllowAnyHeader()
+      );
     });
     return builder;
   }

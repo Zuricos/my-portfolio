@@ -1,11 +1,10 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using Zuricos.Folio.Data.Const;
 using Zuricos.Folio.Data.Models;
 
 namespace Zuricos.Folio.Data;
+
 public class FolioDbContext(DbContextOptions<FolioDbContext> options) : DbContext(options)
 {
   public DbSet<Account> Accounts { get; set; } = null!;
@@ -25,7 +24,8 @@ public class FolioDbContext(DbContextOptions<FolioDbContext> options) : DbContex
   }
 }
 
-file static class ModelBuilderExtensions{
+file static class ModelBuilderExtensions
+{
   public static void ConfigureAccounts(this EntityTypeBuilder<Account> builder)
   {
     builder.HasKey(a => a.Id);
@@ -51,15 +51,17 @@ file static class ModelBuilderExtensions{
   public static void ConfigureActivities(this EntityTypeBuilder<Activity> builder)
   {
     builder.HasKey(a => a.Id);
-    builder.HasOne(a => a.Account)
+    builder
+      .HasOne(a => a.Account)
       .WithMany(a => a.Activities)
       .HasForeignKey(a => a.AccountId)
       .OnDelete(DeleteBehavior.ClientCascade);
-    builder.HasOne(a => a.Asset)
+    builder
+      .HasOne(a => a.Asset)
       .WithMany() // Do not specify a navigation property on Asset
       .HasForeignKey(a => a.AssetId)
       .OnDelete(DeleteBehavior.ClientCascade);
-    
+
     builder.Property(a => a.Type).IsRequired();
     builder.Property(a => a.Amount).IsRequired().HasColumnType(ConstValues.AmountPrecision);
     builder.Property(a => a.Price).IsRequired().HasColumnType(ConstValues.CurrenyPrecision);
@@ -69,7 +71,10 @@ file static class ModelBuilderExtensions{
     builder.Property(a => a.FeesCurrency).IsRequired().HasMaxLength(3);
     builder.Property(a => a.Description).HasMaxLength(500);
     builder.Property(a => a.TransactionId).IsRequired(false);
-    builder.Property(a => a.ExchangeRate).IsRequired(false).HasColumnType(ConstValues.CurrenyPrecision);
+    builder
+      .Property(a => a.ExchangeRate)
+      .IsRequired(false)
+      .HasColumnType(ConstValues.CurrenyPrecision);
     builder.Property(a => a.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
     builder.Property(a => a.UpdatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
   }
@@ -77,11 +82,12 @@ file static class ModelBuilderExtensions{
   public static void ConfigureAssetHistories(this EntityTypeBuilder<AssetHistory> builder)
   {
     builder.HasKey(a => a.Id);
-    builder.HasOne(a => a.Asset)
+    builder
+      .HasOne(a => a.Asset)
       .WithMany(a => a.History)
       .HasForeignKey(a => a.AssetId)
       .OnDelete(DeleteBehavior.ClientCascade);
-    
+
     builder.Property(a => a.UpdatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
     builder.Property(a => a.Date).IsRequired();
     builder.Property(a => a.Open).IsRequired().HasColumnType(ConstValues.CurrenyPrecision);
@@ -95,12 +101,14 @@ file static class ModelBuilderExtensions{
   {
     builder.HasKey(a => a.Id);
 
-    builder.HasMany(a => a.Accounts)
+    builder
+      .HasMany(a => a.Accounts)
       .WithOne()
       .HasForeignKey(a => a.UserId)
       .OnDelete(DeleteBehavior.ClientCascade);
 
-    builder.HasMany(a => a.Activities)
+    builder
+      .HasMany(a => a.Activities)
       .WithOne()
       .HasForeignKey(a => a.UserId)
       .OnDelete(DeleteBehavior.ClientCascade);
