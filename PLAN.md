@@ -35,9 +35,9 @@ Frontend plan not set at the moment.
    - Documentation updates: invariants recorded in `documentation/` or inline XML summaries, plus guidance on the `Guid.Empty` user convention in `README.md` or developer notes.
 
 - **Open questions / dependencies**
-   - Confirm whether `Portfolio` should support multiple base currencies or a single display currency with per-account overrides.
-   - Decide how transfers between accounts within the same portfolio should be represented (single activity vs. paired activities) before modeling invariants.
-   - Identify any migration blockers (e.g., existing data) that need alignment once Step 2 begins.
+   - Confirm whether `Portfolio` should support multiple base currencies or a single display currency with per-account overrides. - single currency, which per account can be overriden.
+   - Decide how transfers between accounts within the same portfolio should be represented (single activity vs. paired activities) before modeling invariants. - paired activities
+   - Identify any migration blockers (e.g., existing data) that need alignment once Step 2 begins.- no existing Data present
 
 2. Refine persistence layer and migrations
    - Update `FolioDbContext` configurations to reflect the finalized domain (relationships, cascade rules, indexes, constraints).
