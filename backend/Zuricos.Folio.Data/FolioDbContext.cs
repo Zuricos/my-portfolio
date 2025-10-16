@@ -62,7 +62,12 @@ file static class ModelBuilderExtensions
       .HasForeignKey(a => a.PortfolioId)
       .OnDelete(DeleteBehavior.Cascade);
 
-    builder.HasIndex(a => new { a.UserId, a.PortfolioId, a.IsDeleted });
+    builder.HasIndex(a => new
+    {
+      a.UserId,
+      a.PortfolioId,
+      a.IsDeleted,
+    });
   }
 
   public static void ConfigureAssets(this EntityTypeBuilder<Asset> builder)

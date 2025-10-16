@@ -1,40 +1,40 @@
 # Implementation Plan for Backend
 Frontend plan not set at the moment.
 
-1. Solidify the portfolio domain
+1. Solidify the portfolio domain ✅ **COMPLETED**
    - Introduce a dedicated `Portfolio` aggregate (e.g., broker, bank) that owns currency-specific `Account` children, where the currency is for visual displaying and as well the default curreny for that `Account`. But keep in mind that an `Account` should also can have transactions with a different currency, with an FX where the user later in the frontend can either provide or it will take the FX of that Day from History saved i.e. for USD-EUR.
    - Revisit `Account`, `Activity`, and `Asset` models so they support cash-only flows (deposits/withdrawals/transfers) without requiring an `AssetId`.
    - Fix enum naming (e.g., `Cryptocurrency`) and align precision constants with desired financial accuracy.
    - Decide on audit metadata (created/updated timestamps, soft deletes) and propagate consistently across entities.
 
-## Step 1 Plan: Solidify the portfolio domain
+## Step 1 Plan: Solidify the portfolio domain ✅ **COMPLETED**
 
-- **Goals**
+- **Goals** ✅
    - Model ownership boundaries so that every `Portfolio`, `Account`, and `Activity` implicitly associates with the placeholder user (`Guid.Empty`) until user management is available.
    - Ensure cash-only and multi-currency activity flows are expressible without bloating the aggregate.
    - Align monetary precision and enum naming to avoid churn in later migration steps.
 
-- **Workstreams**
-   - **Portfolio aggregate**
+- **Workstreams** ✅
+   - **Portfolio aggregate** ✅
       - Add `backend/Zuricos.Folio.Data/Models/Portfolio.cs` with fields: `Id`, `Name`, `Institution`, `DisplayCurrency`, `Notes`, `UserId` (`Guid.Empty` default), `CreatedUtc`, `UpdatedUtc`, and soft-delete metadata.
       - Extend `backend/Zuricos.Folio.Data/Models/Account.cs` to include `PortfolioId`, `DisplayCurrency`, optional `Category`, and audit metadata consistent with `Portfolio`.
       - Document aggregate invariants (e.g., `DisplayCurrency` must be ISO 4217 uppercase, `Portfolio` cannot be soft-deleted while accounts remain active).
-   - **Activity model flexibility**
+   - **Activity model flexibility** ✅
       - Make `AssetId` nullable in `Activity`, introduce `ActivityKind` values for cash actions, and add FX fields (`BookCurrency`, `CounterCurrency`, `FxRate`, `SettledAmount`) to support cross-currency transactions.
       - Normalize enum naming under `backend/Zuricos.Folio.Data/Const` (e.g., rename `CryptoCurrency` to `Cryptocurrency`, ensure casing alignment) and update references.
-   - **Common value objects & precision**
+   - **Common value objects & precision** ✅
       - Confirm precision constants in `ConstValues` meet financial requirements (e.g., 18,8 for FX rates, 19,4 for amounts) and add new constants if needed.
       - Evaluate introducing lightweight structs for `Money` and `CurrencyCode`; capture decision and rationale (implement now or defer) in project notes.
-   - **Audit and soft delete policy**
+   - **Audit and soft delete policy** ✅
       - Decide between a shared auditable interface vs. `OwnedEntity` configuration; implement consistent mapping for `CreatedUtc`, `UpdatedUtc`, and `IsDeleted` across `Portfolio`, `Account`, `Activity`, `Asset`, `AssetHistory`.
       - Plan lifecycle hooks (e.g., soft-delete cascade for accounts when a portfolio is archived) without yet implementing persistence changes.
 
-- **Deliverables**
+- **Deliverables** ✅
    - Updated domain model classes and supporting constants reflecting the refined aggregate structure.
    - Draft of EF Core configuration changes (to be finalized in Step 2) noted in `backend/Zuricos.Folio.Data/FolioDbContext` comments or TODOs.
    - Documentation updates: invariants recorded in `documentation/` or inline XML summaries, plus guidance on the `Guid.Empty` user convention in `README.md` or developer notes.
 
-- **Open questions / dependencies**
+- **Open questions / dependencies** ✅ **RESOLVED**
    - Confirm whether `Portfolio` should support multiple base currencies or a single display currency with per-account overrides. - single currency, which per account can be overriden.
    - Decide how transfers between accounts within the same portfolio should be represented (single activity vs. paired activities) before modeling invariants. - paired activities
    - Identify any migration blockers (e.g., existing data) that need alignment once Step 2 begins.- no existing Data present
