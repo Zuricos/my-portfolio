@@ -1,28 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Zuricos.Folio.Api.Migrations
+namespace Zuricos.Folio.Api.Migrations;
+
+/// <inheritdoc />
+public partial class AddAdjCloseToHistory : Migration
 {
   /// <inheritdoc />
-  public partial class AddAdjCloseToHistory : Migration
+  protected override void Up(MigrationBuilder migrationBuilder)
   {
-    /// <inheritdoc />
-    protected override void Up(MigrationBuilder migrationBuilder)
-    {
-      migrationBuilder.AddColumn<decimal>(
-        name: "AdjustedClose",
-        table: "AssetHistories",
-        type: "numeric",
-        nullable: false,
-        defaultValue: 0m
-      );
-    }
+    migrationBuilder.AddColumn<decimal>(
+      name: "AdjustedClose",
+      table: "AssetHistories",
+      type: "numeric",
+      nullable: false,
+      defaultValue: 0m
+    );
+  }
 
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-      migrationBuilder.DropColumn(name: "AdjustedClose", table: "AssetHistories");
-    }
+  /// <inheritdoc />
+  protected override void Down(MigrationBuilder migrationBuilder)
+  {
+    migrationBuilder.DropColumn(name: "AdjustedClose", table: "AssetHistories");
   }
 }

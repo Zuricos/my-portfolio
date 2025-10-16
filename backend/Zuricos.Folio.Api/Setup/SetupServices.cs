@@ -17,7 +17,7 @@ public static class HostApplicationBuilderServiceExtension
     builder.Services.AddProblemDetails();
     builder.Services.AddHttpContextAccessor();
 
-    var provider = builder.Configuration.GetValue("DatabaseProvider", "psql");
+    string provider = builder.Configuration.GetValue("DatabaseProvider", "psql");
     builder.Services.AddDbContextFactory<FolioDbContext>(options =>
     {
       _ = provider switch

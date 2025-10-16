@@ -23,7 +23,7 @@
 ## Coding Conventions
 - Target framework is `net9.0`; use modern C# 13 features where appropriate but avoid preview APIs unless already used.
 - Stick to nullable reference types (project has `<Nullable>enable</Nullable>`).
-- Return `IResult` or strongly typed `ActionResult<T>` in controllers; avoid magic strings for route names.
+- Return `Result<T>` with `TypedResult<T>` in controller based services; avoid magic strings for route names.
 - Keep comments concise; only explain non-obvious logic.
 - Prefer file-scoped namespaces and top-level statements, mirroring existing style.
 
