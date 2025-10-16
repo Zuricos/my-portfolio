@@ -105,7 +105,7 @@ public class Activity
 
   // Properties for transfer activities
   /// <summary>
-  /// Groups related transfer activities together. 
+  /// Groups related transfer activities together.
   /// Transfers between accounts use paired activities with the same TransferGroupId.
   /// </summary>
   public Guid? TransferGroupId { get; set; }
