@@ -2,8 +2,12 @@ namespace Zuricos.Folio.Data.Const;
 
 public static class ConstValues
 {
-  public const string DefaultPrecision = "decimal(20, 4)";
-  public const string CurrenyPrecision = "decimal(18, 6)";
-  public const string AmountPrecision = "decimal(20, 8)";
-  public const string FeePrecision = "decimal(10, 6)";
+  // Column type aliases for PostgreSQL numeric columns used across monetary fields
+  public const string MoneyColumnType = "numeric(19, 4)";
+  public const string QuantityColumnType = "numeric(20, 8)";
+  public const string FxRateColumnType = "numeric(18, 8)";
+  public const string ChargeColumnType = "numeric(19, 4)";
+
+  // Placeholder user binding until user management is introduced
+  public static readonly Guid DefaultUserId = Guid.Empty;
 }

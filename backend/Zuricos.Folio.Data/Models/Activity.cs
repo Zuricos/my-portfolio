@@ -1,3 +1,4 @@
+using Zuricos.Folio.Data.Const;
 using Zuricos.Folio.Data.Enums;
 
 namespace Zuricos.Folio.Data.Models;
@@ -8,27 +9,35 @@ public class Activity
   public Guid Id { get; set; } = Guid.NewGuid();
 
   // Foreign keys
-  public required Guid UserId { get; set; }
+  public Guid UserId { get; set; } = ConstValues.DefaultUserId;
   public required Guid AccountId { get; set; }
-  public required Guid AssetId { get; set; }
+  public Guid? AssetId { get; set; }
 
   // Activity details
-  public required ActivityType Type { get; set; }
-  public required decimal Amount { get; set; }
-  public required decimal Price { get; set; }
-  public required string PriceCurrency { get; set; }
-  public required decimal Tax { get; set; }
-  public required decimal Fees { get; set; }
-  public required string FeesCurrency { get; set; }
+  public ActivityType Type { get; set; } = ActivityType.Other;
+  public decimal Quantity { get; set; }
+  public decimal Amount { get; set; }
+  public required string BookCurrency { get; set; }
+  public decimal? CounterAmount { get; set; }
+  public string? CounterCurrency { get; set; }
+  public decimal? FxRate { get; set; }
+  public decimal? SettledAmount { get; set; }
+  public decimal? UnitPrice { get; set; }
+  public string? UnitPriceCurrency { get; set; }
+  public decimal? Tax { get; set; }
+  public decimal? Fees { get; set; }
+  public string? FeesCurrency { get; set; }
   public string? Description { get; set; }
 
   // Properties for transfer activities
-  public Guid? TransactionId { get; set; }
-  public decimal? ExchangeRate { get; set; }
+  public Guid? TransferGroupId { get; set; }
 
   // Timestamps
-  public required DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-  public required DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+  public DateTimeOffset OccurredOn { get; set; } = DateTimeOffset.UtcNow;
+  public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
+  public DateTimeOffset UpdatedUtc { get; set; } = DateTimeOffset.UtcNow;
+  public bool IsDeleted { get; set; }
+  public DateTimeOffset? DeletedUtc { get; set; }
 
   // Navigation properties
   public Account? Account { get; set; }

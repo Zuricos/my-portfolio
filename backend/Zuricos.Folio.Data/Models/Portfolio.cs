@@ -1,22 +1,20 @@
 using Zuricos.Folio.Data.Const;
-using Zuricos.Folio.Data.Enums;
 
 namespace Zuricos.Folio.Data.Models;
 
-public class Asset
+public class Portfolio
 {
   public Guid Id { get; set; } = Guid.NewGuid();
   public Guid UserId { get; set; } = ConstValues.DefaultUserId;
-  public required string Isin { get; set; }
   public required string Name { get; set; }
-  public required string Symbol { get; set; }
-  public required string Currency { get; set; }
-  public required DataSource DataSource { get; set; }
+  public string? Institution { get; set; }
+  public required string DisplayCurrency { get; set; }
+  public string? Notes { get; set; }
   public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
   public DateTimeOffset UpdatedUtc { get; set; } = DateTimeOffset.UtcNow;
   public bool IsDeleted { get; set; }
   public DateTimeOffset? DeletedUtc { get; set; }
 
   // Navigation properties
-  public List<AssetHistory> History { get; set; } = [];
+  public List<Account> Accounts { get; set; } = [];
 }

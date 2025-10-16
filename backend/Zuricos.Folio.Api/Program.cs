@@ -1,11 +1,11 @@
 using Zuricos.Folio.Api.Setup;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.SetupConfig();
 builder.SetupServices();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
