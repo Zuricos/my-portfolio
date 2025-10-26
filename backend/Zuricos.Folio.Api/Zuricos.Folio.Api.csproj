@@ -5,9 +5,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.Npgsql" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
     <PackageReference Include="CoinGecko.Net" Version="4.0.0" />
     <PackageReference Include="Finance.NET" Version="1.0.7" />
+    <PackageReference
+      Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore"
+      Version="9.0.10"
+    />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zuricos.Folio.Data\Zuricos.Folio.Data.csproj" />

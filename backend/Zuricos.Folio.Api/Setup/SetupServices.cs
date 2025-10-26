@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Zuricos.Folio.Data;
 
 namespace Zuricos.Folio.Api.Setup;
@@ -18,17 +19,31 @@ public static class HostApplicationBuilderServiceExtension
     builder.Services.AddHttpContextAccessor();
 
     string provider = builder.Configuration.GetValue("DatabaseProvider", "psql");
+    string connectionString = provider switch
+    {
+      "psql" => builder.Configuration.GetConnectionString("psql")
+        ?? throw new InvalidOperationException("PostgreSQL connection string 'psql' is required."),
+      _ => throw new NotSupportedException($"Database provider '{provider}' is not supported."),
+    };
+
     builder.Services.AddDbContextFactory<FolioDbContext>(options =>
     {
       _ = provider switch
       {
         "psql" => options.UseNpgsql(
-          builder.Configuration.GetConnectionString("psql"),
+          connectionString,
           x => x.MigrationsAssembly("Zuricos.Folio.Migrations.Psql")
         ),
         _ => throw new NotSupportedException($"Database provider '{provider}' is not supported."),
       };
     });
+
+    // Add health checks with appropriate tags for readiness and liveness
+    builder
+      .Services.AddHealthChecks()
+      .AddCheck("self", () => HealthCheckResult.Healthy("Application is running"), ["live"])
+      .AddDbContextCheck<FolioDbContext>("database", tags: ["ready", "database"])
+      .AddNpgSql(connectionString, name: "postgresql", tags: ["ready", "database"]);
 
     string allowHost = builder.Configuration.GetValue("AllowedHosts", "*");
     builder.Services.AddCors(options =>

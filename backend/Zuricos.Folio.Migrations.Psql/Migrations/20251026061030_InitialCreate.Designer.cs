@@ -9,18 +9,18 @@ using Zuricos.Folio.Data;
 
 #nullable disable
 
-namespace Zuricos.Folio.Api.Migrations
+namespace Zuricos.Folio.Migrations.Psql.Migrations
 {
     [DbContext(typeof(FolioDbContext))]
-    [Migration("20251016161910_RefactorDomainForPortfolioAggregate")]
-    partial class RefactorDomainForPortfolioAggregate
+    [Migration("20251026061030_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -72,11 +72,25 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PortfolioId");
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Accounts_Name");
 
-                    b.HasIndex("UserId", "PortfolioId", "IsDeleted");
+                    b.HasIndex("PortfolioId", "Type", "IsDeleted")
+                        .HasDatabaseName("IX_Accounts_PortfolioId_Type_IsDeleted");
 
-                    b.ToTable("Accounts");
+                    b.HasIndex("UserId", "PortfolioId", "IsDeleted")
+                        .HasDatabaseName("IX_Accounts_UserId_PortfolioId_IsDeleted");
+
+                    b.ToTable("Accounts", t =>
+                        {
+                            t.HasCheckConstraint("CK_Accounts_DisplayCurrency_Format", "LENGTH(\"DisplayCurrency\") = 3 AND \"DisplayCurrency\" = UPPER(\"DisplayCurrency\")");
+
+                            t.HasCheckConstraint("CK_Accounts_Name_NotEmpty", "LENGTH(TRIM(\"Name\")) > 0");
+
+                            t.HasCheckConstraint("CK_Accounts_SoftDelete_Integrity", "(\"IsDeleted\" = false AND \"DeletedUtc\" IS NULL) OR (\"IsDeleted\" = true AND \"DeletedUtc\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_Accounts_Type_Valid", "\"Type\" IN (0, 1, 2)");
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.Activity", b =>
@@ -94,22 +108,15 @@ namespace Zuricos.Folio.Api.Migrations
                     b.Property<Guid?>("AssetId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BookCurrency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<decimal?>("CounterAmount")
-                        .HasColumnType("numeric(19, 4)");
-
-                    b.Property<string>("CounterCurrency")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
                     b.Property<DateTimeOffset>("CreatedUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
 
                     b.Property<DateTimeOffset?>("DeletedUtc")
                         .HasColumnType("timestamp with time zone");
@@ -120,10 +127,6 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.Property<decimal?>("Fees")
                         .HasColumnType("numeric(19, 4)");
-
-                    b.Property<string>("FeesCurrency")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
 
                     b.Property<decimal?>("FxRate")
                         .HasColumnType("numeric(18, 8)");
@@ -139,8 +142,9 @@ namespace Zuricos.Folio.Api.Migrations
                     b.Property<decimal>("Quantity")
                         .HasColumnType("numeric(20, 8)");
 
-                    b.Property<decimal?>("SettledAmount")
-                        .HasColumnType("numeric(19, 4)");
+                    b.Property<string>("SourceCurrency")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
 
                     b.Property<decimal?>("Tax")
                         .HasColumnType("numeric(19, 4)");
@@ -150,13 +154,6 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasColumnType("numeric(19, 4)");
-
-                    b.Property<string>("UnitPriceCurrency")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
 
                     b.Property<DateTimeOffset>("UpdatedUtc")
                         .ValueGeneratedOnAdd()
@@ -168,13 +165,47 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("OccurredOn")
+                        .HasDatabaseName("IX_Activities_OccurredOn");
 
-                    b.HasIndex("AssetId");
+                    b.HasIndex("TransferGroupId")
+                        .HasDatabaseName("IX_Activities_TransferGroupId")
+                        .HasFilter("\"TransferGroupId\" IS NOT NULL");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AssetId", "OccurredOn")
+                        .HasDatabaseName("IX_Activities_AssetId_OccurredOn")
+                        .HasFilter("\"AssetId\" IS NOT NULL");
 
-                    b.ToTable("Activities");
+                    b.HasIndex("AccountId", "OccurredOn", "IsDeleted")
+                        .HasDatabaseName("IX_Activities_AccountId_OccurredOn_IsDeleted");
+
+                    b.HasIndex("UserId", "Type", "OccurredOn")
+                        .HasDatabaseName("IX_Activities_UserId_Type_OccurredOn");
+
+                    b.ToTable("Activities", t =>
+                        {
+                            t.HasCheckConstraint("CK_Activities_Amount_Positive", "\"Amount\" > 0");
+
+                            t.HasCheckConstraint("CK_Activities_Asset_Required_For_Securities", "(\"Type\" IN (4, 5) AND \"AssetId\" IS NOT NULL) OR \"Type\" NOT IN (4, 5)");
+
+                            t.HasCheckConstraint("CK_Activities_Currency_Format", "LENGTH(\"Currency\") = 3 AND \"Currency\" = UPPER(\"Currency\")");
+
+                            t.HasCheckConstraint("CK_Activities_Fees_NonNegative", "\"Fees\" IS NULL OR \"Fees\" >= 0");
+
+                            t.HasCheckConstraint("CK_Activities_FxRate_Positive", "\"FxRate\" IS NULL OR \"FxRate\" > 0");
+
+                            t.HasCheckConstraint("CK_Activities_MultiCurrency_Consistency", "(\"FxRate\" IS NULL AND \"SourceCurrency\" IS NULL) OR (\"FxRate\" IS NOT NULL AND \"SourceCurrency\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_Activities_Quantity_NonNegative", "\"Quantity\" >= 0");
+
+                            t.HasCheckConstraint("CK_Activities_SoftDelete_Integrity", "(\"IsDeleted\" = false AND \"DeletedUtc\" IS NULL) OR (\"IsDeleted\" = true AND \"DeletedUtc\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_Activities_SourceCurrency_Format", "\"SourceCurrency\" IS NULL OR (LENGTH(\"SourceCurrency\") = 3 AND \"SourceCurrency\" = UPPER(\"SourceCurrency\"))");
+
+                            t.HasCheckConstraint("CK_Activities_Tax_NonNegative", "\"Tax\" IS NULL OR \"Tax\" >= 0");
+
+                            t.HasCheckConstraint("CK_Activities_Type_Valid", "\"Type\" IN (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 99)");
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.Asset", b =>
@@ -227,12 +258,34 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataSource")
+                        .HasDatabaseName("IX_Assets_DataSource");
+
                     b.HasIndex("Symbol")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Assets_Symbol_Unique");
 
-                    b.HasIndex("UserId", "IsDeleted");
+                    b.HasIndex("Currency", "IsDeleted")
+                        .HasDatabaseName("IX_Assets_Currency_IsDeleted");
 
-                    b.ToTable("Assets");
+                    b.HasIndex("Symbol", "Currency")
+                        .HasDatabaseName("IX_Assets_Symbol_Currency");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_Assets_UserId_IsDeleted");
+
+                    b.ToTable("Assets", t =>
+                        {
+                            t.HasCheckConstraint("CK_Assets_Currency_Format", "LENGTH(\"Currency\") = 3 AND \"Currency\" = UPPER(\"Currency\")");
+
+                            t.HasCheckConstraint("CK_Assets_ISIN_Format", "LENGTH(\"Isin\") <= 12 AND \"Isin\" ~ '^[A-Z]{2}[A-Z0-9]{9}[0-9]{1}$'");
+
+                            t.HasCheckConstraint("CK_Assets_Name_NotEmpty", "LENGTH(TRIM(\"Name\")) > 0");
+
+                            t.HasCheckConstraint("CK_Assets_SoftDelete_Integrity", "(\"IsDeleted\" = false AND \"DeletedUtc\" IS NULL) OR (\"IsDeleted\" = true AND \"DeletedUtc\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_Assets_Symbol_NotEmpty", "LENGTH(TRIM(\"Symbol\")) > 0");
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.AssetHistory", b =>
@@ -282,9 +335,29 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssetId");
+                    b.HasIndex("AssetId", "Date")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("IX_AssetHistories_AssetId_Date_Desc");
 
-                    b.ToTable("AssetHistories");
+                    b.HasIndex("Date", "IsDeleted")
+                        .HasDatabaseName("IX_AssetHistories_Date_IsDeleted");
+
+                    b.HasIndex("AssetId", "Date", "IsDeleted")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AssetHistories_AssetId_Date_Unique");
+
+                    b.ToTable("AssetHistories", t =>
+                        {
+                            t.HasCheckConstraint("CK_AssetHistories_High_Low_Relationship", "\"High\" >= \"Low\"");
+
+                            t.HasCheckConstraint("CK_AssetHistories_OHLC_Positive", "\"Open\" > 0 AND \"High\" > 0 AND \"Low\" > 0 AND \"Close\" > 0 AND \"AdjustedClose\" > 0");
+
+                            t.HasCheckConstraint("CK_AssetHistories_OHLC_Range", "\"Open\" BETWEEN \"Low\" AND \"High\" AND \"Close\" BETWEEN \"Low\" AND \"High\"");
+
+                            t.HasCheckConstraint("CK_AssetHistories_SoftDelete_Integrity", "(\"IsDeleted\" = false AND \"DeletedUtc\" IS NULL) OR (\"IsDeleted\" = true AND \"DeletedUtc\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_AssetHistories_Volume_NonNegative", "\"Volume\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.Portfolio", b =>
@@ -332,9 +405,23 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "IsDeleted");
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Portfolios_Name");
 
-                    b.ToTable("Portfolios");
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_Portfolios_UserId_IsDeleted");
+
+                    b.HasIndex("UserId", "Institution", "IsDeleted")
+                        .HasDatabaseName("IX_Portfolios_UserId_Institution_IsDeleted");
+
+                    b.ToTable("Portfolios", t =>
+                        {
+                            t.HasCheckConstraint("CK_Portfolios_DisplayCurrency_Format", "LENGTH(\"DisplayCurrency\") = 3 AND \"DisplayCurrency\" = UPPER(\"DisplayCurrency\")");
+
+                            t.HasCheckConstraint("CK_Portfolios_Name_NotEmpty", "LENGTH(TRIM(\"Name\")) > 0");
+
+                            t.HasCheckConstraint("CK_Portfolios_SoftDelete_Integrity", "(\"IsDeleted\" = false AND \"DeletedUtc\" IS NULL) OR (\"IsDeleted\" = true AND \"DeletedUtc\" IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.User", b =>
@@ -358,7 +445,26 @@ namespace Zuricos.Folio.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("BaseCurrency")
+                        .HasDatabaseName("IX_Users_BaseCurrency");
+
+                    b.ToTable("Users", t =>
+                        {
+                            t.HasCheckConstraint("CK_Users_BaseCurrency_Format", "LENGTH(\"BaseCurrency\") = 3 AND \"BaseCurrency\" = UPPER(\"BaseCurrency\")");
+
+                            t.HasCheckConstraint("CK_Users_Language_Format", "\"Language\" ~ '^[a-z]{2}(-[A-Z]{2})?$'");
+
+                            t.HasCheckConstraint("CK_Users_Theme_Valid", "\"Theme\" IN (0, 1, 2)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            BaseCurrency = "USD",
+                            Language = "en-US",
+                            Theme = 0
+                        });
                 });
 
             modelBuilder.Entity("Zuricos.Folio.Data.Models.Account", b =>

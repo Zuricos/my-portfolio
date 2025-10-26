@@ -44,59 +44,36 @@ public class Activity
   public decimal Quantity { get; set; }
 
   /// <summary>
-  /// Primary monetary amount in the book currency.
+  /// Final settled monetary amount in the account currency (after all fees and conversions).
   /// </summary>
   public decimal Amount { get; set; }
 
   /// <summary>
-  /// Currency of the primary amount. Must be ISO 4217 uppercase.
+  /// Currency of the amount and account. Must be ISO 4217 uppercase.
   /// </summary>
-  public required string BookCurrency { get; set; }
+  public required string Currency { get; set; }
 
   /// <summary>
-  /// Optional counter-party amount for FX transactions.
-  /// </summary>
-  public decimal? CounterAmount { get; set; }
-
-  /// <summary>
-  /// Currency of the counter amount for FX transactions.
-  /// </summary>
-  public string? CounterCurrency { get; set; }
-
-  /// <summary>
-  /// Exchange rate used for currency conversion (CounterAmount / Amount).
+  /// Exchange rate used for currency conversion (SourceCurrency to Currency).
+  /// Only set for cross-currency transactions.
   /// </summary>
   public decimal? FxRate { get; set; }
 
   /// <summary>
-  /// Final settled amount after FX conversion and fees.
+  /// Original currency of the transaction if different from account currency.
+  /// Only set for cross-currency transactions.
   /// </summary>
-  public decimal? SettledAmount { get; set; }
+  public string? SourceCurrency { get; set; }
 
   /// <summary>
-  /// Price per unit of the asset at transaction time.
-  /// </summary>
-  public decimal? UnitPrice { get; set; }
-
-  /// <summary>
-  /// Currency denomination of the unit price.
-  /// </summary>
-  public string? UnitPriceCurrency { get; set; }
-
-  /// <summary>
-  /// Tax amount charged for this activity.
+  /// Tax amount charged for this activity (in same currency as Amount).
   /// </summary>
   public decimal? Tax { get; set; }
 
   /// <summary>
-  /// Fee amount charged for this activity.
+  /// Fee amount charged for this activity (in same currency as Amount).
   /// </summary>
   public decimal? Fees { get; set; }
-
-  /// <summary>
-  /// Currency denomination of fees and taxes.
-  /// </summary>
-  public string? FeesCurrency { get; set; }
 
   /// <summary>
   /// Optional description or notes for the activity.
@@ -135,6 +112,20 @@ public class Activity
   /// UTC timestamp when the activity was soft-deleted, if applicable.
   /// </summary>
   public DateTimeOffset? DeletedUtc { get; set; }
+
+  // Calculated properties (not stored in database)
+  /// <summary>
+  /// Calculated price per unit of the asset (Amount / Quantity).
+  /// Returns null for cash-only transactions or when Quantity is zero.
+  /// </summary>
+  public decimal? UnitPrice => Quantity > 0 ? Amount / Quantity : null;
+
+  /// <summary>
+  /// Calculated original amount in source currency before conversion.
+  /// Returns null for single-currency transactions.
+  /// </summary>
+  public decimal? SourceAmount =>
+    FxRate.HasValue && FxRate.Value > 0 ? Amount / FxRate.Value : null;
 
   // Navigation properties
   /// <summary>
