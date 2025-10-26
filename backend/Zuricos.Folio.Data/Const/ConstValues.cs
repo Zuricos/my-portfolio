@@ -32,6 +32,7 @@ public static class ConstValues
   /// <summary>
   /// Placeholder user identifier for single-tenant operation until user management is implemented.
   /// All portfolios, accounts, and activities are associated with this user by default.
+  /// Note: Using a specific GUID instead of Guid.Empty for EF Core seeding compatibility.
   /// </summary>
-  public static readonly Guid DefaultUserId = Guid.Empty;
+  public static readonly Guid DefaultUserId = new("00000000-0000-0000-0000-000000000001");
 }
