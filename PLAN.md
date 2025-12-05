@@ -16,6 +16,14 @@ Frontend plan not set at the moment.
    - Create interfaces and implementations for core workflows: portfolio management, account management, transaction orchestration, asset catalog maintenance.
    - Leverage `IDbContextFactory<FolioDbContext>` for scoped operations and encapsulate transactional logic where consistency is required.
    - Introduce DTO mappers (manual or with a lightweight mapper) to isolate EF entities from API payloads.
+   - **Execution plan**
+     1. Catalogue required use-cases from Step 1 outcomes (portfolio, account, activity, asset) and document the service boundaries plus method signatures in `documentation/` for sign-off.
+     2. Shape shared abstractions: define core interfaces under `backend/Zuricos.Folio.Api/Application` (e.g., `IPortfolioService`, `IAccountService`, `IActivityService`, `IAssetCatalogService`) returning `Result<T>`/`TypedResult<T>` variants and capturing validation failures.
+     3. Design transport DTOs under a dedicated `Contracts` namespace, add mapping helpers (static converters or extension methods) ensuring no EF types leak to controllers.
+     4. Implement `PortfolioService` and `AccountService` using `IDbContextFactory<FolioDbContext>`, wrap multi-entity operations in EF Core transactions, and enforce domain invariants (currency alignment, account ownership) with concise guard clauses.
+     5. Implement `ActivityService` to orchestrate cash and asset transactions, centralize balance adjustments, and prepare integration points for future price lookups without coupling to external providers yet.
+     6. Implement `AssetCatalogService` to manage asset lifecycle, seed any baseline asset metadata, and expose query methods optimized with `AsNoTracking` where appropriate.
+     7. Register the new services within `SetupServices.cs`, add lightweight smoke tests or console harness if helpful, and note follow-up test coverage tasks in Step 9.
 
 4. Build API surface
    - Add minimal API endpoints which uses services so the api is just the description without logic, for portfolios, accounts, activities, and assets following RESTful conventions.

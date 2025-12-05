@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Zuricos.Folio.Api.Application.Abstractions;
+using Zuricos.Folio.Api.Application.Services;
 using Zuricos.Folio.Data;
 
 namespace Zuricos.Folio.Api.Setup;
@@ -17,6 +19,11 @@ public static class HostApplicationBuilderServiceExtension
     builder.Services.AddControllers();
     builder.Services.AddProblemDetails();
     builder.Services.AddHttpContextAccessor();
+
+    builder.Services.AddScoped<IPortfolioService, PortfolioService>();
+    builder.Services.AddScoped<IAccountService, AccountService>();
+    builder.Services.AddScoped<IActivityService, ActivityService>();
+    builder.Services.AddScoped<IAssetCatalogService, AssetCatalogService>();
 
     string provider = builder.Configuration.GetValue("DatabaseProvider", "psql");
     string connectionString = provider switch
