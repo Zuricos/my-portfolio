@@ -1,34 +1,28 @@
 # Implementation Plan for Backend
 Frontend plan not set at the moment.
 
+> **Note for future contributors (incl. AI assistants):**
+> After completing any implementation step below, update this plan immediately with a short summary of what changed so the roadmap stays accurate for the next agent.
+
 1. Solidify the portfolio domain ✅ **COMPLETED**
-   - Introduce a dedicated `Portfolio` aggregate (e.g., broker, bank) that owns currency-specific `Account` children, where the currency is for visual displaying and as well the default curreny for that `Account`. But keep in mind that an `Account` should also can have transactions with a different currency, with an FX where the user later in the frontend can either provide or it will take the FX of that Day from History saved i.e. for USD-EUR.
-   - Revisit `Account`, `Activity`, and `Asset` models so they support cash-only flows (deposits/withdrawals/transfers) without requiring an `AssetId`.
-   - Fix enum naming (e.g., `Cryptocurrency`) and align precision constants with desired financial accuracy.
-   - Decide on audit metadata (created/updated timestamps, soft deletes) and propagate consistently across entities.
+   - Domain entities (`Portfolio`, `Account`, `Activity`, `Asset`) now model cash-only and mixed-currency flows with audit metadata and soft-delete flags.
+   - Precision constants (money, quantity, FX) live in `ConstValues`, and enums were cleaned up for readability.
+   - Portfolios own currency-aware account children, while activities store FX data so mismatched currencies can be reconciled later.
 
 2. Refine persistence layer and migrations ✅ **COMPLETED**
-   - Update `FolioDbContext` configurations to reflect the finalized domain (relationships, cascade rules, indexes, constraints).
-   - Add or adjust EF Core migrations (including seeding reference data such as default activity types if needed).
-   - Validate PostgreSQL compatibility for all precision settings and ensure migrations compile under `Zuricos.Folio.Migrations.Psql`.
+   - `FolioDbContext` config matches the domain, including cascade rules, owned types, and indexes for lookups.
+   - Latest EF Core migrations target the PostgreSQL project and compile under `Zuricos.Folio.Migrations.Psql`.
+   - Column precision uses the shared constants, keeping Postgres schema consistent with money/quantity requirements.
 
 3. Establish application services ✅ **COMPLETED**
-   - Create interfaces and implementations for core workflows: portfolio management, account management, transaction orchestration, asset catalog maintenance.
-   - Leverage `IDbContextFactory<FolioDbContext>` for scoped operations and encapsulate transactional logic where consistency is required.
-   - Introduce DTO mappers (manual or with a lightweight mapper) to isolate EF entities from API payloads.
-   - **Execution plan**
-     1. Catalogue required use-cases from Step 1 outcomes (portfolio, account, activity, asset) and document the service boundaries plus method signatures in `documentation/` for sign-off.
-     2. Shape shared abstractions: define core interfaces under `backend/Zuricos.Folio.Api/Application` (e.g., `IPortfolioService`, `IAccountService`, `IActivityService`, `IAssetCatalogService`) returning `Result<T>`/`TypedResult<T>` variants and capturing validation failures.
-     3. Design transport DTOs under a dedicated `Contracts` namespace, add mapping helpers (static converters or extension methods) ensuring no EF types leak to controllers.
-     4. Implement `PortfolioService` and `AccountService` using `IDbContextFactory<FolioDbContext>`, wrap multi-entity operations in EF Core transactions, and enforce domain invariants (currency alignment, account ownership) with concise guard clauses.
-     5. Implement `ActivityService` to orchestrate cash and asset transactions, centralize balance adjustments, and prepare integration points for future price lookups without coupling to external providers yet.
-     6. Implement `AssetCatalogService` to manage asset lifecycle, seed any baseline asset metadata, and expose query methods optimized with `AsNoTracking` where appropriate.
-     7. Register the new services within `SetupServices.cs`, add lightweight smoke tests or console harness if helpful, and note follow-up test coverage tasks in Step 9.
+   - Interfaces, DTOs, and mappers live under `Application/*`, keeping EF Core entities out of the transport layer.
+   - `PortfolioService`, `AccountService`, `ActivityService`, and `AssetCatalogService` implement the full workflow catalog via `IDbContextFactory<FolioDbContext>` and guard clauses.
+   - Result/validation patterns are standardized through `Result`/`ValidationError`, ready for controller translation.
 
-4. Build API surface
-   - Add minimal API endpoints which uses services so the api is just the description without logic, for portfolios, accounts, activities, and assets following RESTful conventions.
-   - Implement CRUD plus scenario-specific endpoints (e.g., transaction posting, manual balance adjustments).
-   - Apply input validation (FluentValidation or model attributes) and return `Result<T>` responses with `TypedResults` aligned with existing conventions.
+4. Build API surface ✅ **COMPLETED**
+   - Minimal API groups now expose portfolios, accounts, activities, and assets under `/api`, delegating directly to the existing services.
+   - CRUD plus workflow-specific routes (cash/trade/transfer posting, listings) were wired with `Result` to `TypedResults` translation helpers.
+   - Input validation continues to live inside the services; controllers remain thin wrappers as planned.
 
 5. Implement finance provider integrations
    - Define an abstraction (e.g., `IAssetPriceProvider`) and concrete adapters for CoinGecko and Finance.NET packages, keep in mind that CoinGecko is for cryptocurrency and Finance.NET for stock market etc, use Yahoofinance there if possible.
