@@ -1,3 +1,4 @@
+using Zuricos.Folio.Api.Endpoints;
 using Zuricos.Folio.Api.Setup;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,10 @@ if (app.Environment.IsDevelopment())
 {
   app.MapOpenApi();
 }
+
+app.UseCors("AllowHost");
+
+app.MapApiEndpoints();
 
 // Map health check endpoints
 app.MapHealthChecks("/healthz");
