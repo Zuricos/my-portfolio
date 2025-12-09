@@ -7,12 +7,12 @@ Frontend plan not set at the moment.
    - Fix enum naming (e.g., `Cryptocurrency`) and align precision constants with desired financial accuracy.
    - Decide on audit metadata (created/updated timestamps, soft deletes) and propagate consistently across entities.
 
-2. Refine persistence layer and migrations
+2. Refine persistence layer and migrations ✅ **COMPLETED**
    - Update `FolioDbContext` configurations to reflect the finalized domain (relationships, cascade rules, indexes, constraints).
    - Add or adjust EF Core migrations (including seeding reference data such as default activity types if needed).
    - Validate PostgreSQL compatibility for all precision settings and ensure migrations compile under `Zuricos.Folio.Migrations.Psql`.
 
-3. Establish application services
+3. Establish application services ✅ **COMPLETED**
    - Create interfaces and implementations for core workflows: portfolio management, account management, transaction orchestration, asset catalog maintenance.
    - Leverage `IDbContextFactory<FolioDbContext>` for scoped operations and encapsulate transactional logic where consistency is required.
    - Introduce DTO mappers (manual or with a lightweight mapper) to isolate EF entities from API payloads.
